@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity
     DoorDashApi doorDashApi;
 
     //Change this to false if you wish to use location provider
-    private boolean usePresetValues = true;
+    private boolean usePresetValues = false;
     GPSTracker gpsTracker;
     private ListView listView;
     private RestaurantListAdapter listAdapter;
