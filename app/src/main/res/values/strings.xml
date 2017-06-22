@@ -3,6 +3,8 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
+    <string name="title_location_permission">Location Permission Needed</string>
+    <string name="text_location_permission">Please allow us to access your location for better results.</string>
+    <string name="string_ok">OK</string>
     <string name="action_settings">Settings</string>
 </resources>

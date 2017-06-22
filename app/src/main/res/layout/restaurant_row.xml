@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:orientation="vertical"
+    android:padding="5dp">
+
+
+    <ImageView
+        android:id="@+id/cover_image"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:textStyle="bold"
+        android:src="@android:drawable/ic_dialog_info"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="11dp" />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Name"
+        android:textSize="14sp"
+        android:textColor="#000000"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/cover_image"
+        android:layout_alignStart="@+id/description"
+        android:layout_above="@+id/description" />
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:text="Description "
+        android:textColor="#3C3C3C"
+        android:layout_above="@+id/delivery_fee"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/cover_image" />
+
+    <TextView
+        android:id="@+id/delivery_fee"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="$3.99 "
+        android:textSize="12sp"
+        android:textColor="#1D1D1D"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/description" />
+
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Open"
+        android:textSize="12sp"
+        android:textColor="#1D1D1D"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true" />
+
+</RelativeLayout>
