@@ -4,7 +4,9 @@ import android.content.Context;
 import android.util.Log;
 
 import com.alkutkar.doordash.events.FetchRestaurantsEvent;
+import com.alkutkar.doordash.events.RestaurantDetailFetchSuccessEvent;
 import com.alkutkar.doordash.events.RestaurantListUpdatedEvent;
+import com.alkutkar.doordash.events.ViewRestaurantDetailEvent;
 import com.alkutkar.doordash.manager.CacheManager;
 import com.alkutkar.doordash.models.Restaurant;
 import com.android.volley.RequestQueue;
@@ -48,9 +50,29 @@ public class DoorDashApi {
         fetchRestaurantsInArea(event.getLatitude(),event.getLongitude());
     }
 
+    public void onEvent(ViewRestaurantDetailEvent event)
+    {
+        Log.i("EVENT","Fetch Restaurants Details");
+        fetchRestaurantDetailsForId(event.getId());
+    }
+
+
+
     /*
         API Implementation Methods Start Here
      */
+
+    private void fetchRestaurantDetailsForId(int id) {
+        String uri = String.format(baseUrl+"restaurant/%1$s",
+                Integer.toString(id)
+        );
+
+        GsonRequest<Restaurant> myReq = new GsonRequest<Restaurant>(uri,
+                Restaurant.class, null,
+                createRestaurantDetailSuccessListener(), // listener for success
+                createRestaurantDetailErrorListener());  // listener for failure
+        queue.add(myReq);
+    }
 
     public void fetchRestaurantsInArea(double latitude, double longitude)
     {
@@ -61,12 +83,27 @@ public class DoorDashApi {
 
         GsonRequest<Restaurant[]> myReq = new GsonRequest<Restaurant[]>(uri,
                 Restaurant[].class, null,
-                createSuccessListener(), // listener for success
-                createErrorListener());  // listener for failure
+                createRestaurantListSuccessListener(), // listener for success
+                createRestaurantListErrorListener());  // listener for failure
         queue.add(myReq);
     }
 
-    private Response.Listener<Restaurant[]> createSuccessListener() {
+    private Response.Listener<Restaurant> createRestaurantDetailSuccessListener() {
+
+        return new Response.Listener<Restaurant>() {
+            @Override
+            public void onResponse(Restaurant response) {
+                try {
+                    EventBus.getDefault().post(new RestaurantDetailFetchSuccessEvent(response));
+                } catch (Exception e) {
+
+                }
+            }
+        };
+
+    }
+
+    private Response.Listener<Restaurant[]> createRestaurantListSuccessListener() {
 
         return new Response.Listener<Restaurant[]>() {
             @Override
@@ -82,7 +119,7 @@ public class DoorDashApi {
 
     }
 
-    private Response.ErrorListener createErrorListener() {
+    private Response.ErrorListener createRestaurantListErrorListener() {
 
         return new Response.ErrorListener() {
             @Override
@@ -92,4 +129,17 @@ public class DoorDashApi {
         };
 
     }
+
+    private Response.ErrorListener createRestaurantDetailErrorListener() {
+
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.i(TAG, "Error : " + error.getLocalizedMessage());
+            }
+        };
+
+    }
+
+
 }

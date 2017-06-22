@@ -15,6 +15,7 @@ public class Restaurant {
     private String coverImageUrl;
     private String status;
     private String status_type;
+    @SerializedName(value="delivery_fee")
     private String deliveryFee;
 
     public int getId() {
