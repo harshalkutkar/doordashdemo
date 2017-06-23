@@ -16,13 +16,16 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alkutkar.doordash.GPSTracker;
@@ -43,6 +46,9 @@ public class ListFragment extends Fragment {
     private ListView listView;
     private RestaurantListAdapter listAdapter;
     private ArrayList<Restaurant> restaurantArrayList;
+    private boolean shouldFilterFavorites = false;
+    private static final String SHOULD_FILTER_FAVORITES = "shouldFilterFavorites";
+
     DoorDashApi doorDashApi;
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     public static final double doorDashHqLat = Double.parseDouble("37.422740");
@@ -51,6 +57,20 @@ public class ListFragment extends Fragment {
     private boolean usePresetValues = false;
     GPSTracker gpsTracker;
     private Activity mActivity;
+
+    /**
+     * Create a new instance of DetailsFragment, initialized to
+     * show the text at 'index'.
+     */
+    public static ListFragment newInstance(boolean shouldFilterFavorites) {
+        ListFragment f = new ListFragment();
+        // Supply index input as an argument.
+        Bundle args = new Bundle();
+        args.putBoolean(SHOULD_FILTER_FAVORITES, shouldFilterFavorites);
+        f.setArguments(args);
+        return f;
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -66,12 +86,11 @@ public class ListFragment extends Fragment {
                     if (ContextCompat.checkSelfPermission(getActivity(),
                             Manifest.permission. ACCESS_FINE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {
-                        if(gpsTracker.canGetLocation()){
+                        gpsTracker = new GPSTracker(getActivity());
 
+                        if(gpsTracker.canGetLocation()){
                             double latitude = gpsTracker.getLatitude();
                             double longitude = gpsTracker.getLongitude();
-
-                            // \n is for new line
                             Toast.makeText(getActivity().getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
                         }else{
                             // can't get location
@@ -81,9 +100,9 @@ public class ListFragment extends Fragment {
                         }
 
                         if (usePresetValues == false) {
-                            EventBus.getDefault().post(new FetchRestaurantsEvent(gpsTracker.getLatitude(), gpsTracker.getLongitude()));
+                            EventBus.getDefault().post(new FetchRestaurantsEvent(gpsTracker.getLatitude(), gpsTracker.getLongitude(), shouldFilterFavorites));
                         } else {
-                            EventBus.getDefault().post(new FetchRestaurantsEvent(doorDashHqLat,doorDashHqLon));
+                            EventBus.getDefault().post(new FetchRestaurantsEvent(doorDashHqLat,doorDashHqLon, shouldFilterFavorites));
                         }
                     }
 
@@ -118,26 +137,15 @@ public class ListFragment extends Fragment {
     // Any view setup should occur here.  E.g., view lookups and attaching view listeners.
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        Bundle args = getArguments();
+        shouldFilterFavorites = args.getBoolean(SHOULD_FILTER_FAVORITES, false);
         listView=(ListView) getView().findViewById(R.id.list);
-        doorDashApi = new DoorDashApi(getActivity().getApplicationContext());
+        doorDashApi = new DoorDashApi(mActivity);
         gpsTracker = new GPSTracker(getActivity());
         checkLocationPermission();
         EventBus.getDefault().register(this);
     }
 
-    // This method will be called when the restaurant list is updated
-    public void onEvent(final RestaurantListUpdatedEvent event) {
-        listAdapter= new RestaurantListAdapter(event.getRestaurantList(),mActivity.getApplicationContext());
-        listView.setAdapter(listAdapter);
-        this.restaurantArrayList = event.getRestaurantList();
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Restaurant restaurant= event.getRestaurantList().get(position);
-                EventBus.getDefault().post(new ViewRestaurantDetailEvent(restaurant.getId()));
-            }
-        });
-    }
 
     public boolean checkLocationPermission() {
 
@@ -158,9 +166,7 @@ public class ListFragment extends Fragment {
                         .setPositiveButton(R.string.string_ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                //Prompt the user once explanation has been shown
-                                ActivityCompat.requestPermissions(getActivity(),
-                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                         MY_PERMISSIONS_REQUEST_LOCATION);
                             }
                         })
@@ -170,8 +176,7 @@ public class ListFragment extends Fragment {
 
             } else {
                 // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{Manifest.permission. ACCESS_FINE_LOCATION},
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
             }
             return false;
@@ -191,9 +196,9 @@ public class ListFragment extends Fragment {
             }
 
             if (usePresetValues == false) {
-                EventBus.getDefault().post(new FetchRestaurantsEvent(gpsTracker.getLatitude(), gpsTracker.getLongitude()));
+                EventBus.getDefault().post(new FetchRestaurantsEvent(gpsTracker.getLatitude(), gpsTracker.getLongitude(), shouldFilterFavorites));
             } else {
-                EventBus.getDefault().post(new FetchRestaurantsEvent(doorDashHqLat,doorDashHqLon));
+                EventBus.getDefault().post(new FetchRestaurantsEvent(doorDashHqLat,doorDashHqLon, shouldFilterFavorites));
             }
             return true;
         }
@@ -207,6 +212,24 @@ public class ListFragment extends Fragment {
         ft.replace(R.id.fragment_placeholder, detailFragment);
         ft.commit();
         ((AppCompatActivity)mActivity).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    // This method will be called when the restaurant list is updated
+    public void onEvent(final RestaurantListUpdatedEvent event) {
+        if (event.getRestaurantList().size()==0) {
+            Toast.makeText(getActivity(), "Sorry we do not have any results for you", Toast.LENGTH_LONG).show();
+        } else {
+            listAdapter = new RestaurantListAdapter(event.getRestaurantList(), mActivity.getApplicationContext());
+            listView.setAdapter(listAdapter);
+            this.restaurantArrayList = event.getRestaurantList();
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Restaurant restaurant = event.getRestaurantList().get(position);
+                    EventBus.getDefault().post(new ViewRestaurantDetailEvent(restaurant.getId()));
+                }
+            });
+        }
     }
 
 }

@@ -23,8 +23,4 @@ public class RestaurantDetailFetchSuccessEvent {
         this.restaurant = restaurant;
     }
 
-
-
-
-
 }

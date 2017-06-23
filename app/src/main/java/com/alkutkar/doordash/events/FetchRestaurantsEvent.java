@@ -9,6 +9,8 @@ public class FetchRestaurantsEvent {
     private double latitude = 0.0;
     private double longitude = 0.0;
 
+    private boolean shouldFilterFavorites = false;
+
     public double getLatitude() {
         return latitude;
     }
@@ -25,8 +27,17 @@ public class FetchRestaurantsEvent {
         this.longitude = longitude;
     }
 
-    public FetchRestaurantsEvent(double latitude,double longitude) {
+    public FetchRestaurantsEvent(double latitude,double longitude, boolean shouldFilterFavorites) {
         this.latitude = latitude;
         this.longitude = longitude;
+        this.shouldFilterFavorites = shouldFilterFavorites;
+    }
+
+    public boolean shouldFilterFavorites() {
+        return shouldFilterFavorites;
+    }
+
+    public void setShouldFilterFavorites(boolean shouldFilterFavorites) {
+        this.shouldFilterFavorites = shouldFilterFavorites;
     }
 }

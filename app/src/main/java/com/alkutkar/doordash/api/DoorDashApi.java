@@ -8,6 +8,7 @@ import com.alkutkar.doordash.events.RestaurantDetailFetchSuccessEvent;
 import com.alkutkar.doordash.events.RestaurantListUpdatedEvent;
 import com.alkutkar.doordash.events.ViewRestaurantDetailEvent;
 import com.alkutkar.doordash.manager.CacheManager;
+import com.alkutkar.doordash.models.Favorites;
 import com.alkutkar.doordash.models.Restaurant;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -38,6 +39,7 @@ public class DoorDashApi {
     {
         EventBus.getDefault().register(this);
         queue = Volley.newRequestQueue(context);
+        this.mContext = context;
     }
 
     /*
@@ -47,7 +49,7 @@ public class DoorDashApi {
     public void onEvent(FetchRestaurantsEvent event)
     {
         Log.i("EVENT","Fetch Restaurants Event");
-        fetchRestaurantsInArea(event.getLatitude(),event.getLongitude());
+        fetchRestaurantsInArea(event.getLatitude(),event.getLongitude(),event.shouldFilterFavorites());
     }
 
     public void onEvent(ViewRestaurantDetailEvent event)
@@ -74,7 +76,7 @@ public class DoorDashApi {
         queue.add(myReq);
     }
 
-    public void fetchRestaurantsInArea(double latitude, double longitude)
+    public void fetchRestaurantsInArea(double latitude, double longitude, boolean filter)
     {
         String uri = String.format(baseUrl+"restaurant?lat=%1$s&lng=%2$s",
                 Double.toString(latitude),
@@ -83,8 +85,8 @@ public class DoorDashApi {
 
         GsonRequest<Restaurant[]> myReq = new GsonRequest<Restaurant[]>(uri,
                 Restaurant[].class, null,
-                createRestaurantListSuccessListener(), // listener for success
-                createRestaurantListErrorListener());  // listener for failure
+                createRestaurantListSuccessListener(filter), // listener for success
+                createRestaurantListErrorListener(filter));  // listener for failure
         queue.add(myReq);
     }
 
@@ -103,23 +105,41 @@ public class DoorDashApi {
 
     }
 
-    private Response.Listener<Restaurant[]> createRestaurantListSuccessListener() {
+    private Response.Listener<Restaurant[]> createRestaurantListSuccessListener(final boolean filter) {
 
         return new Response.Listener<Restaurant[]>() {
             @Override
             public void onResponse(Restaurant[] response) {
                 try {
                     ArrayList<Restaurant> restaurants = new ArrayList<>(Arrays.asList(response));
-                    EventBus.getDefault().post(new RestaurantListUpdatedEvent(restaurants));
+                    ArrayList<Restaurant> filtered = new ArrayList<Restaurant>();
+                    //---------------- Filter Favorites -----------------------
+                    if (filter) {
+                        //filter out all the favorites
+                        Favorites favorites = new Favorites(mContext);
+                        for (Restaurant r: restaurants) {
+                            for (Integer i : favorites.getFavorites()) {
+                                if (i.compareTo(r.getId())==0) {
+                                    filtered.add(r);
+                                }
+                            }
+                        }
+                    }
+                    //--------------- End Filter Favorites --------------
+                    if (filter) {
+                        EventBus.getDefault().post(new RestaurantListUpdatedEvent(filtered));
+                    } else {
+                        EventBus.getDefault().post(new RestaurantListUpdatedEvent(restaurants));
+                    }
                 } catch (Exception e) {
-
+                    Log.e("ERROR",e.getLocalizedMessage());
                 }
             }
         };
 
     }
 
-    private Response.ErrorListener createRestaurantListErrorListener() {
+    private Response.ErrorListener createRestaurantListErrorListener(boolean filter) {
 
         return new Response.ErrorListener() {
             @Override

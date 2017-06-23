@@ -9,11 +9,13 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alkutkar.doordash.R;
 import com.alkutkar.doordash.api.DownloadImageTask;
+import com.alkutkar.doordash.models.Favorites;
 import com.alkutkar.doordash.models.Restaurant;
 
 import org.w3c.dom.Text;
@@ -24,6 +26,7 @@ import java.util.Locale;
 public class DetailFragment extends Fragment {
 
     private Restaurant restaurant;
+    private Favorites favorites;
 
 
     public static DetailFragment newInstance(Restaurant passedRestaurant) {
@@ -50,12 +53,29 @@ public class DetailFragment extends Fragment {
         TextView status = (TextView) view.findViewById(R.id.txtStatus);
         TextView deliveryFee = (TextView) view.findViewById(R.id.txtDeliveryFee);
         ImageView logo = (ImageView) view.findViewById(R.id.imgLogo);
+        final Button addToFavorites = (Button) view.findViewById(R.id.btnAddToFavorites);
+        favorites = new Favorites(getActivity());
+
+        if (favorites.getFavorites().contains(restaurant.getId())) {
+            addToFavorites.setText("Remove From Favorites");
+        }
+        addToFavorites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (favorites.getFavorites().contains(restaurant.getId())) {
+                    favorites.remove(restaurant.getId());
+                } else {
+                    favorites.add(restaurant.getId());
+                }
+                favorites.save();
+            }
+        });
+
         if (restaurant != null) {
             name.setText(restaurant.getName());
             description.setText(restaurant.getDescription());
             status.setText(restaurant.getStatus());
             deliveryFee.setText(centsToDollars(restaurant.getDeliveryFee()));
-
             new DownloadImageTask(logo)
                     .execute(restaurant.getCoverImageUrl());
         }
