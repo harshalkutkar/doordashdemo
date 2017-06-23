@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alkutkar.doordash.R;
 import com.alkutkar.doordash.api.DownloadImageTask;
@@ -55,6 +56,7 @@ public class DetailFragment extends Fragment {
         ImageView logo = (ImageView) view.findViewById(R.id.imgLogo);
         final Button addToFavorites = (Button) view.findViewById(R.id.btnAddToFavorites);
         favorites = new Favorites(getActivity());
+        addToFavorites.setEnabled(true);
 
         if (favorites.getFavorites().contains(restaurant.getId())) {
             addToFavorites.setText("Remove From Favorites");
@@ -64,10 +66,13 @@ public class DetailFragment extends Fragment {
             public void onClick(View v) {
                 if (favorites.getFavorites().contains(restaurant.getId())) {
                     favorites.remove(restaurant.getId());
+                    Toast.makeText(getActivity(),"Removed from Favorites",Toast.LENGTH_SHORT);
                 } else {
                     favorites.add(restaurant.getId());
+                    Toast.makeText(getActivity(),"Added To Favorites",Toast.LENGTH_SHORT);
                 }
                 favorites.save();
+                addToFavorites.setEnabled(false);
             }
         });
 
