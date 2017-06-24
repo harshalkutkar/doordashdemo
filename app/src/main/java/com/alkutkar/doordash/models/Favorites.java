@@ -13,25 +13,26 @@ import java.util.List;
  */
 
 public class Favorites {
-    public static String SHARED_PREFS_NAME = "DOORDASH_FAV";
+    public static final String SHARED_PREFS_NAME = "DOORDASH_FAV";
     ArrayList<Integer> idList;
+    SharedPreferences prefs;
 
     private Context mContext;
 
     public Favorites(Context context) {
         this.mContext = context;
+        prefs = mContext.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
         idList =  new ArrayList (Arrays.asList(getFromPrefs()));
-
     }
 
-    public void save() {
-        Integer[] idArray = idList.toArray(new Integer[idList.size()]);
-        storeIntArray(idArray);
+    public boolean save() {
+        Integer[] idArray = getFavorites().toArray(new Integer[getFavorites().size()]);
+        return storeIntArray(idArray);
     }
 
     public void add(int i) {
-        if (!idList.contains(Integer.valueOf(i))) {
-            idList.add(i);
+        if (!getFavorites().contains(i)) {
+            getFavorites().add(i);
         }
     }
 
@@ -43,19 +44,19 @@ public class Favorites {
         return idList;
     }
 
-    public void storeIntArray(Integer array[]){
-        SharedPreferences.Editor edit= mContext.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE).edit();
+    private boolean storeIntArray(Integer array[]){
+
+        SharedPreferences.Editor edit= prefs.edit();
         edit.putInt("Count", array.length);
         int count = 0;
         for (Integer i: array){
             edit.putInt("IntValue_" + count++, i);
         }
-        edit.commit();
+        return edit.commit();
     }
 
-    public Integer[] getFromPrefs(){
+    private Integer[] getFromPrefs(){
         Integer[] ret;
-        SharedPreferences prefs = mContext.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
         int count = prefs.getInt("Count", 0);
         ret = new Integer[count];
         for (int i = 0; i < count; i++){

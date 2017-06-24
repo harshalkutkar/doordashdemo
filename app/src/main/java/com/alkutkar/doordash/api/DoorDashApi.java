@@ -35,6 +35,7 @@ public class DoorDashApi {
     private Context mContext;
 
 
+
     public DoorDashApi(Context context)
     {
         EventBus.getDefault().register(this);
@@ -64,7 +65,7 @@ public class DoorDashApi {
         API Implementation Methods Start Here
      */
 
-    private void fetchRestaurantDetailsForId(int id) {
+    public void fetchRestaurantDetailsForId(int id) {
         String uri = String.format(baseUrl+"restaurant/%1$s",
                 Integer.toString(id)
         );
