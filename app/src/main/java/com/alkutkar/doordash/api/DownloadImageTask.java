@@ -14,6 +14,7 @@ import java.io.InputStream;
 
 public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
     ImageView bmImage;
+    boolean successful = false;
 
     public DownloadImageTask(ImageView bmImage) {
         this.bmImage = bmImage;
@@ -33,6 +34,11 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
     }
 
     protected void onPostExecute(Bitmap result) {
+        successful = true;
         bmImage.setImageBitmap(result);
+    }
+
+    public boolean isSuccessful() {
+        return successful;
     }
 }
