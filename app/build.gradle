@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
+    useLibrary 'org.apache.http.legacy'
     defaultConfig {
         applicationId "com.alkutkar.doordash"
         minSdkVersion 18
@@ -36,4 +37,5 @@ dependencies {
     testCompile 'org.powermock:powermock-module-junit4-rule-agent:1.6.1'
     testCompile 'org.powermock:powermock-module-junit4-rule:1.6.1'
     testCompile 'org.powermock:powermock-module-junit4:1.6.1'
+    testCompile "org.robolectric:robolectric:3.3.2"
 }

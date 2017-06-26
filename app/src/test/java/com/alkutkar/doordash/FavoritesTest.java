@@ -54,6 +54,7 @@ public class FavoritesTest{
         PowerMockito.when(preferences.getInt("Count",0)).thenReturn(0);
         PowerMockito.when(mContext.getSharedPreferences(SHARED_PREFS_NAME,Context.MODE_PRIVATE)).thenReturn(preferences);
     }
+
     @Test
     public void testAddingObjectToFavorites(){
         favorites = new Favorites(mContext);

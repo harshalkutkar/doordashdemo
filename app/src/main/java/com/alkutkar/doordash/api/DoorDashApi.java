@@ -49,13 +49,11 @@ public class DoorDashApi {
 
     public void onEvent(FetchRestaurantsEvent event)
     {
-        Log.i("EVENT","Fetch Restaurants Event");
         fetchRestaurantsInArea(event.getLatitude(),event.getLongitude(),event.shouldFilterFavorites());
     }
 
     public void onEvent(ViewRestaurantDetailEvent event)
     {
-        Log.i("EVENT","Fetch Restaurants Details");
         fetchRestaurantDetailsForId(event.getId());
     }
 
