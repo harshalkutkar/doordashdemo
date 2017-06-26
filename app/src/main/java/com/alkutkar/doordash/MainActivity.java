@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         // Replace the contents of the container with the new fragment
         ListFragment fragment = ListFragment.newInstance(shouldFilterFavorites);
-        ft.replace(R.id.fragment_placeholder, fragment);
+        ft.replace(R.id.fragment_placeholder, fragment, "ListFragment");
         ft.commit();
     }
 
