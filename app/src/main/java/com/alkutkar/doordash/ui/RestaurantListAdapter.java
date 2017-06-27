@@ -4,15 +4,13 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alkutkar.doordash.R;
-import com.alkutkar.doordash.api.DownloadImageTask;
 import com.alkutkar.doordash.models.Restaurant;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
@@ -83,10 +81,7 @@ public class RestaurantListAdapter extends ArrayAdapter<Restaurant> implements V
         viewHolder.txtName.setText(dataModel.getName());
         viewHolder.txtStatus.setText(dataModel.getStatus());
         viewHolder.txtDescription.setText(dataModel.getDescription());
-
-        new DownloadImageTask(viewHolder.imgCoverImage)
-                .execute(dataModel.getCoverImageUrl());
-
+        Glide.with(mContext).load(dataModel.getCoverImageUrl()).into(viewHolder.imgCoverImage);
         // Return the completed view to render on screen
         return convertView;
     }

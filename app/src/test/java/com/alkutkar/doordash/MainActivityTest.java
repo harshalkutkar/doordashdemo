@@ -1,6 +1,5 @@
 package com.alkutkar.doordash;
 
-import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,7 +8,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.alkutkar.doordash.api.DownloadImageTask;
 import com.alkutkar.doordash.models.Restaurant;
 import com.alkutkar.doordash.ui.RestaurantListAdapter;
 
@@ -19,10 +17,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowActivity;
-import org.robolectric.shadows.ShadowIntent;
 import org.robolectric.shadows.ShadowListView;
 
 import java.util.ArrayList;

@@ -15,11 +15,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alkutkar.doordash.R;
-import com.alkutkar.doordash.api.DownloadImageTask;
 import com.alkutkar.doordash.models.Favorites;
 import com.alkutkar.doordash.models.Restaurant;
-
-import org.w3c.dom.Text;
+import com.bumptech.glide.Glide;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -81,8 +79,7 @@ public class DetailFragment extends Fragment {
             description.setText(restaurant.getDescription());
             status.setText(restaurant.getStatus());
             deliveryFee.setText(centsToDollars(restaurant.getDeliveryFee()));
-            new DownloadImageTask(logo)
-                    .execute(restaurant.getCoverImageUrl());
+            Glide.with(getContext()).load(restaurant.getCoverImageUrl()).into(logo);
         }
 
     }

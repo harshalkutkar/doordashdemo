@@ -11,25 +11,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alkutkar.doordash.GPSTracker;
-import com.alkutkar.doordash.MainActivity;
 import com.alkutkar.doordash.R;
 import com.alkutkar.doordash.api.DoorDashApi;
 import com.alkutkar.doordash.events.FetchRestaurantsEvent;
@@ -37,6 +31,8 @@ import com.alkutkar.doordash.events.RestaurantDetailFetchSuccessEvent;
 import com.alkutkar.doordash.events.RestaurantListUpdatedEvent;
 import com.alkutkar.doordash.events.ViewRestaurantDetailEvent;
 import com.alkutkar.doordash.models.Restaurant;
+import android.app.ProgressDialog;
+
 
 import java.util.ArrayList;
 
@@ -48,6 +44,7 @@ public class ListFragment extends Fragment {
     private ArrayList<Restaurant> restaurantArrayList;
     private boolean shouldFilterFavorites = false;
     private static final String SHOULD_FILTER_FAVORITES = "shouldFilterFavorites";
+    private ProgressDialog loading = null;
 
     DoorDashApi doorDashApi;
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -144,6 +141,7 @@ public class ListFragment extends Fragment {
         gpsTracker = new GPSTracker(getActivity());
         checkLocationPermission();
         EventBus.getDefault().register(this);
+        createAndShowProgressBar(view.getContext());
     }
 
 
@@ -212,6 +210,9 @@ public class ListFragment extends Fragment {
         ft.replace(R.id.fragment_placeholder, detailFragment);
         ft.commit();
         ((AppCompatActivity)mActivity).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (loading != null) {
+            loading.dismiss();
+        }
     }
 
     // This method will be called when the restaurant list is updated
@@ -230,6 +231,18 @@ public class ListFragment extends Fragment {
                 }
             });
         }
+        if (loading != null) {
+            loading.dismiss();
+        }
+    }
+
+    private void createAndShowProgressBar(Context context)
+    {
+        loading = new ProgressDialog(context);
+        loading.setCancelable(true);
+        loading.setMessage("Loading...");
+        loading.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        loading.show();
     }
 
 }
