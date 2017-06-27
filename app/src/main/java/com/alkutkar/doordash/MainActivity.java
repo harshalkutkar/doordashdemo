@@ -1,18 +1,10 @@
 package com.alkutkar.doordash;
 
 
-import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -20,26 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Toast;
 
-import com.alkutkar.doordash.api.DoorDashApi;
-import com.alkutkar.doordash.events.FetchRestaurantsEvent;
-import com.alkutkar.doordash.events.RestaurantDetailFetchSuccessEvent;
-import com.alkutkar.doordash.events.RestaurantListUpdatedEvent;
-import com.alkutkar.doordash.events.ViewRestaurantDetailEvent;
-import com.alkutkar.doordash.models.Restaurant;
-import com.alkutkar.doordash.ui.DetailFragment;
 import com.alkutkar.doordash.ui.ListFragment;
-import com.alkutkar.doordash.ui.RestaurantListAdapter;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import de.greenrobot.event.EventBus;
-
-import static com.alkutkar.doordash.ui.ListFragment.MY_PERMISSIONS_REQUEST_LOCATION;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -52,17 +26,18 @@ public class MainActivity extends AppCompatActivity
         addListFragment(false);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    /*
+        Adds the fragment with the listview to the view hierarchy
+     */
     private void addListFragment(boolean shouldFilterFavorites) {
         // Begin the transaction
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

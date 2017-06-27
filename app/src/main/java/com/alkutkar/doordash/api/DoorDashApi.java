@@ -7,7 +7,6 @@ import com.alkutkar.doordash.events.FetchRestaurantsEvent;
 import com.alkutkar.doordash.events.RestaurantDetailFetchSuccessEvent;
 import com.alkutkar.doordash.events.RestaurantListUpdatedEvent;
 import com.alkutkar.doordash.events.ViewRestaurantDetailEvent;
-import com.alkutkar.doordash.manager.CacheManager;
 import com.alkutkar.doordash.models.Favorites;
 import com.alkutkar.doordash.models.Restaurant;
 import com.android.volley.RequestQueue;
@@ -15,7 +14,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 

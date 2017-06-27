@@ -2,6 +2,7 @@ package com.alkutkar.doordash;
 
 /**
  * Created by harshalkutkar on 6/21/17.
+ * Class for tracking GPS location or if that isn't available fallback to network location
  */
 
 import android.Manifest;
