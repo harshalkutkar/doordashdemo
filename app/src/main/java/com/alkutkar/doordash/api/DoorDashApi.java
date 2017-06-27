@@ -90,7 +90,7 @@ public class DoorDashApi {
     /*
         Response Listeners start here
      */
-    
+
     private Response.Listener<Restaurant> createRestaurantDetailSuccessListener() {
 
         return new Response.Listener<Restaurant>() {
